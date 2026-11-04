@@ -11,6 +11,9 @@
 </head>
 <body>
 
+  <!-- Animated Interactive Particle Background -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
@@ -28,6 +31,11 @@
   <!-- Hero Section -->
   <header id="home" class="hero">
     <div class="container hero-content">
+      <!-- Profile Picture -->
+      <div class="hero-avatar">
+        <img src="profile.jpg" alt="Sandeep Das" class="profile-img" onerror="this.src='https://ui-avatars.com/api/?name=Sandeep+Das&background=1e3a8a&color=fff&size=200'">
+      </div>
+
       <div class="hero-text">
         <h1>Sandeep Das</h1>
         <p class="subtitle">Doctoral Research Scholar | Theoretical Physics</p>
@@ -35,7 +43,9 @@
         
         <div class="social-links">
           <a href="mailto:sandeepdas192@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
-          <a href="https://github.com/" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          <!-- Replace '#' with your actual LinkedIn profile URL -->
+          <a href="https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="https://github.com/sandee-Phy" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
           <a href="https://orcid.org/" target="_blank" title="ORCID"><i class="ai ai-orcid"></i></a>
           <a href="https://scholar.google.com/" target="_blank" title="Google Scholar"><i class="ai ai-google-scholar"></i></a>
           <a href="cv.pdf" class="btn-cv" target="_blank"><i class="fas fa-file-pdf"></i> Curriculum Vitae</a>
@@ -130,5 +140,74 @@
     <p>&copy; 2026 Sandeep Das. Powered by GitHub Pages.</p>
   </footer>
 
+  <!-- Script for Quantum / Connected Particle Animation -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleCount = 45;
+    const maxDistance = 140;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.7;
+        this.vy = (Math.random() - 0.5) * 0.7;
+        this.radius = 2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(30, 58, 138, 0.4)';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(30, 58, 138, ${0.18 * (1 - dist / maxDistance)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
